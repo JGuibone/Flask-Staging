@@ -2,7 +2,7 @@ from os.path import join
 from flask import Flask, request, redirect, render_template
 from werkzeug.utils import secure_filename
 from pathlib import Path
-from website.PyScripts.MainTextExtModule import PDFObject, DocxToText
+from website.PyScripts.MainTextExtModule import PDFObject, DocxToText, pptxToTxt
 
 
 def create_app():
@@ -37,8 +37,9 @@ def create_app():
                         case "docx":
                             file.save(Path(join(UPLOAD_FOLDER,secure_filename(file.filename))))
                             DocxToText(textExctLoc,file)
-                        case "txt":
-                            print("the number is "+str(test1)+".")
+                        case "pptx":
+                            file.save(Path(join(UPLOAD_FOLDER,secure_filename(file.filename))))
+                            pptxToTxt(textExctLoc,file)
                     
         return 'you are on the upload route'
 
