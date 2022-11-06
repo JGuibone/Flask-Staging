@@ -40,6 +40,9 @@ def create_app():
                         case "pptx":
                             file.save(Path(join(UPLOAD_FOLDER,secure_filename(file.filename))))
                             pptxToTxt(textExctLoc,file)
+                        case "ppt":
+                            file.save(Path(join(UPLOAD_FOLDER,secure_filename(file.filename))))
+                            pptxToTxt(textExctLoc,file)
                     
         return 'you are on the upload route'
 
