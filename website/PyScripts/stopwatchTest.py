@@ -29,7 +29,7 @@ def use_regex(input_text):
   
 stop_words = set(stopwords.words('english'))
 
-slicedwords = wordninja.split(PdfToText("C:/staging/re1.pdf"))
+slicedwords = wordninja.split(PdfToText("website/uploads/2_textProc.pdf"))
 
 filtered_sentence = [w.lower() for w in slicedwords if not w.lower() in stop_words]
 
