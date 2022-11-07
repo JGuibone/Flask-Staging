@@ -2,7 +2,7 @@ from os.path import join
 from flask import Flask, request, redirect, render_template
 from werkzeug.utils import secure_filename
 from pathlib import Path
-from website.PyScripts.MainTextExtModule import PDFObject, DocxToText, pptxToTxt
+from website.PyScripts.MainTextExtModule import PdfToText, DocxToText, pptxToTxt
 
 
 def create_app():
@@ -33,7 +33,7 @@ def create_app():
                     match file.filename.rsplit('.', 1)[1].lower():
                         case "pdf":
                             file.save(Path(join(UPLOAD_FOLDER,secure_filename(file.filename))))
-                            PDFObject(textExctLoc,file)
+                            PdfToText(textExctLoc,file)
                         case "docx":
                             file.save(Path(join(UPLOAD_FOLDER,secure_filename(file.filename))))
                             DocxToText(textExctLoc,file)
