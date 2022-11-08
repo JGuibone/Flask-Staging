@@ -1,8 +1,9 @@
+import time
 from os.path import join
 from flask import Flask, request, redirect, render_template
 from werkzeug.utils import secure_filename
 from pathlib import Path
-from website.PyScripts.MainTextExtModule import PDFObject, DocxToText
+from website.PyScripts.MainTextExtModule import *
 
 
 def create_app():
@@ -33,13 +34,18 @@ def create_app():
                     match file.filename.rsplit('.', 1)[1].lower():
                         case "pdf":
                             file.save(Path(join(UPLOAD_FOLDER,secure_filename(file.filename))))
-                            PDFObject(textExctLoc,file)
+                            StrToCSV(textExctLoc,PdfToText(file),file.filename)
                         case "docx":
                             file.save(Path(join(UPLOAD_FOLDER,secure_filename(file.filename))))
-                            DocxToText(textExctLoc,file)
+                            StrToCSV(textExctLoc,DocxToText(file),file.filename)
+                        case "pptx":
+                            file.save(Path(join(UPLOAD_FOLDER,secure_filename(file.filename))))
+                            StrToCSV(textExctLoc,pptxToTxt(file),file.filename)
                         case "txt":
-                            print("the number is "+str(test1)+".")
-                    
+                            file.save(Path(join(UPLOAD_FOLDER,secure_filename(file.filename))))
+                            StrToCSV(textExctLoc,txtReader(file),file.filename)
+
+            time.sleep(.1)        
         return 'you are on the upload route'
 
     return app
