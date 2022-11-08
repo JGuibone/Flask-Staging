@@ -2,7 +2,7 @@
 DIC_LOCATION = "website/static/wordDic/wordninja_words.txt"
 
 
-
+import csv
 import wordninja
 import time
 import re
@@ -12,51 +12,74 @@ from nltk.tokenize import word_tokenize
 from PyPDF2 import PdfFileReader
 from werkzeug.utils import secure_filename
 from os.path import join
+from docx import Document
+from pptx import Presentation
+import re
+
 
 START_TIME = time.time()
+textExctLoc = Path("website/textExtract")
+
+# def use_regex(input_text):
+#     text = re.sub("[^\x00-\x7F]+","", input_text)
+#     text = re.sub("\W+", " ", text)
+#     return text
+
+# def cleaning(unclean:str):
+#     stop_words = set(stopwords.words('english'))
+#     slicedwords = wordninja.split(unclean)
+#     filtered_sentence = list(set([w.lower() for w in slicedwords if not w.lower() in stop_words]))
+#     return filtered_sentence
+
+def StrToCSV(extLocation: str, unclean:str, fileName: str):
+    FileName = f"{fileName}.csv"
+    text = re.sub("[^\x00-\x7F]+","", unclean)
+    text = re.sub("\W+", " ", text)
+    stop_words = set(stopwords.words('english'))
+    slicedwords = wordninja.split(text)
+    filtered_sentence = list(set([w.lower() for w in slicedwords if not w.lower() in stop_words]))
+    with Path(join(extLocation,secure_filename(FileName))).open(mode="w", encoding='utf-8') as outputFile:
+        writer = csv.writer(outputFile)
+        writer.writerow(filtered_sentence)
+        outputFile.close()
+        return 1
 
 def PdfToText (fileobj: str):
     pdf = PdfFileReader(fileobj)
     text = ''
     for page in pdf.pages:
         text += page.extract_text()
-    return use_regex(text)
-
-def use_regex(input_text):
-    text = re.sub("[^\x00-\x7F]+","", input_text)
-    text = re.sub("\W+", " ", text)
     return text
-  
-stop_words = set(stopwords.words('english'))
 
-slicedwords = wordninja.split(PdfToText("website/uploads/2_textProc.pdf"))
+def DocxToText(fileobj: str):
+    document = Document(fileobj)
+    docText = '\n\n'.join(paragraph.text + " " for paragraph in document.paragraphs)
+    return docText
 
-filtered_sentence = [w.lower() for w in slicedwords if not w.lower() in stop_words]
+def pptxToTxt(fileobj: str):
+    prs = Presentation(fileobj)
+    text = ''
+    for slide in prs.slides:
+        for shape in slide.shapes:
+            if not shape.has_text_frame:
+                continue
+            for paragraph in shape.text_frame.paragraphs:
+                for run in paragraph.runs:
+                    text += run.text + " "
+    return text
 
+def txtReader(fileobj: str):
 
+    with open(fileobj, 'r', encoding='UTF-8') as file:
+        textBufffer = ''
+        for line in file:
+            textBufffer += line.rstrip('\n')
+        return textBufffer
 
-lenUnclean = len(filtered_sentence)
+def pptOrDocToPDF():
+    
+    pass
 
-filtered_sentence = list(set(filtered_sentence))
+# StrToCSV(textExctLoc,txtReader("website/PyScripts/2_TextProc.txt"),'textFile')
 
-lenClean = len(filtered_sentence)
-
-ENDTIME = time.time() - START_TIME
-print(filtered_sentence)
-print(f"{lenUnclean} {lenClean}, {ENDTIME}")
-
-# def localTokenizer(preCleaned:list):
-#     for word in preCleaned:
-
-#         return 1
-# for w in word_tokens:
-#     if w not in stop_words:
-#         filtered_sentence.append(w)
-# def testFunc ():
-#     return 1
-# cleaned = ' '.join(wordninja.split(PdfToText("website/uploads/2_TextProc.pdf")))
-# filtered_sentence = [w for w in cleaned if not w.lower() in stop_words]
-# print(word_tokenize(PdfToText("website/uploads/2_TextProc.pdf")))
-  
-# print(cleaned)
-# print(filtered_sentence)
+# print(txtReader("website/PyScripts/testtxt1.txt"))
